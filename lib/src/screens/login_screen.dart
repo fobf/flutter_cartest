@@ -1,41 +1,40 @@
+// ignore_for_file: sized_box_for_whitespace
+
 import 'package:flutter/material.dart';
-import 'package:flutter_cartest/src/app.dart';
+
 import 'package:flutter_cartest/src/mixins/validation_mixin.dart';
 import 'package:flutter_cartest/src/screens/live_video.dart';
-
-const primaryColor = Color(0xFF1565C0);
-const secondaryColor = Color(0xFF003C8F);
-const additionalColor = Color(0xFFBBDEFB);
-
-const labelColor = TextStyle(color: secondaryColor);
+import 'package:flutter_cartest/const.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({Key? key}) : super(key: key);
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> with ValidationMixin {
   final formKey = GlobalKey<FormState>();
-  String username = '';
-  String password = '';
+  late String username = '';
+  late String password = '';
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 450),
+        margin: kmarginLoginScreen,
         child: Form(
           key: formKey,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: 150),
+              const SizedBox(height: kspacer150),
               heading(),
-              const SizedBox(height: 40),
+              const SizedBox(height: kspacer50),
               usernameField(),
               passwordField(),
-              const SizedBox(height: 80),
+              const SizedBox(height: kspacer100),
               submitButton(),
               orSeparator(),
               livedemoButton(),
@@ -47,29 +46,25 @@ class _LoginScreenState extends State<LoginScreen> with ValidationMixin {
   }
 
   Widget heading() {
-    return Container(
-      child: const Text(
-        'WELCOME!',
-        textAlign: TextAlign.center,
-        style: TextStyle(
-            fontWeight: FontWeight.bold, fontSize: 45, color: primaryColor),
-      ),
+    return const Text(
+      kwelcomeText,
+      style: kheaderStyle,
     );
   }
 
   Widget usernameField() {
-    return
-        //
-        TextFormField(
+    return TextFormField(
       keyboardType: TextInputType.name,
       decoration: const InputDecoration(
         icon: Icon(
           Icons.person,
-          color: primaryColor,
+          size: kiconSize,
+          color: kprimaryColor,
         ),
         labelText: 'Username',
-        labelStyle: labelColor,
+        labelStyle: klabelStyle,
         hintText: 'Your username',
+        alignLabelWithHint: true,
       ),
       validator: validateUsername,
       onSaved: (value) {
@@ -81,25 +76,25 @@ class _LoginScreenState extends State<LoginScreen> with ValidationMixin {
   }
 
   Widget passwordField() {
-    return Container(
-      child: TextFormField(
-        obscureText: true,
-        decoration: const InputDecoration(
-          icon: Icon(
-            Icons.lock,
-            color: primaryColor,
-          ),
-          labelText: 'Password',
-          labelStyle: labelColor,
-          hintText: 'Your Password',
+    return TextFormField(
+      obscureText: true,
+      decoration: const InputDecoration(
+        icon: Icon(
+          Icons.lock,
+          size: kiconSize,
+          color: kprimaryColor,
         ),
-        validator: validatePassword,
-        onSaved: (value) {
-          if (value != null) {
-            password = value;
-          }
-        },
+        labelText: 'Password',
+        alignLabelWithHint: true,
+        labelStyle: klabelStyle,
+        hintText: 'Your Password',
       ),
+      validator: validatePassword,
+      onSaved: (value) {
+        if (value != null) {
+          password = value;
+        }
+      },
     );
   }
 
@@ -108,8 +103,8 @@ class _LoginScreenState extends State<LoginScreen> with ValidationMixin {
       width: double.infinity,
       child: ElevatedButton(
         style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all(primaryColor),
-          padding: MaterialStateProperty.all(EdgeInsets.all(20)),
+          backgroundColor: MaterialStateProperty.all(kprimaryColor),
+          padding: MaterialStateProperty.all(kButtonPadding),
         ),
         onPressed: () {
           if (formKey.currentState?.validate() == true) {
@@ -117,8 +112,8 @@ class _LoginScreenState extends State<LoginScreen> with ValidationMixin {
             print('Time to post $username and $password to  my API');
           }
         },
-        child: Text(
-          'SIGN IN',
+        child: const Text(
+          kSignInText,
         ),
       ),
     );
@@ -126,31 +121,31 @@ class _LoginScreenState extends State<LoginScreen> with ValidationMixin {
 
   Widget orSeparator() {
     return Container(
-      padding: EdgeInsets.all(10),
+      padding: kButtonPadding,
       child: const Text(
-        'or',
-        textAlign: TextAlign.center,
-        style: TextStyle(fontSize: 25, color: primaryColor),
+        kOrText,
+        style: TextStyle(color: kprimaryColor, fontSize: 25),
       ),
     );
   }
 
   Widget livedemoButton() {
+    // ignore: sized_box_for_whitespace
     return Container(
       width: double.infinity,
       child: ElevatedButton(
         style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all(additionalColor),
-          padding: MaterialStateProperty.all(EdgeInsets.all(20)),
+          backgroundColor: MaterialStateProperty.all(kadditionalColor),
+          padding: MaterialStateProperty.all(kButtonPadding),
         ),
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => VideoPlayerApp()),
+            MaterialPageRoute(builder: (context) => const VideoPlayerScreen()),
           );
         },
-        child: Text(
-          'LIVE DEMO',
+        child: const Text(
+          kLiveDemoText,
         ),
       ),
     );
