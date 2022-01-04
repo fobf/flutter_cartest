@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_cartest/src/mixins/validation_mixin.dart';
 import 'package:flutter_cartest/src/screens/live_video.dart';
 import 'package:flutter_cartest/const.dart';
+import 'package:flutter_cartest/src/screens/logged_in_user.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -17,12 +19,32 @@ class _LoginScreenState extends State<LoginScreen> with ValidationMixin {
   final formKey = GlobalKey<FormState>();
   late String username = '';
   late String password = '';
+  late SharedPreferences loginData;
+  late bool newUser;
+
+  @override
+  void initState() {
+    super.initState();
+    checkIfAlreadyLogin();
+  }
+
+  void checkIfAlreadyLogin() async {
+    loginData = await SharedPreferences.getInstance();
+    newUser = (loginData.getBool('login') ?? true);
+    print(newUser);
+    if (newUser == false) {
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => const LoggedInUserVideoPlayerScreen()));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Container(
-        margin: kmarginLoginScreen,
+        margin: kmargin450,
         child: Form(
           key: formKey,
           child: Column(
@@ -104,12 +126,19 @@ class _LoginScreenState extends State<LoginScreen> with ValidationMixin {
       child: ElevatedButton(
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.all(kprimaryColor),
-          padding: MaterialStateProperty.all(kButtonPadding),
+          padding: MaterialStateProperty.all(kPadding20),
         ),
         onPressed: () {
           if (formKey.currentState?.validate() == true) {
             formKey.currentState!.save();
-            print('Time to post $username and $password to  my API');
+            loginData.setBool('login', false);
+            loginData.setString('username', username);
+            print('Successfull  $username ');
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const LoggedInUserVideoPlayerScreen()),
+            );
           }
         },
         child: const Text(
@@ -121,7 +150,7 @@ class _LoginScreenState extends State<LoginScreen> with ValidationMixin {
 
   Widget orSeparator() {
     return Container(
-      padding: kButtonPadding,
+      padding: kPadding20,
       child: const Text(
         kOrText,
         style: TextStyle(color: kprimaryColor, fontSize: 25),
@@ -130,13 +159,12 @@ class _LoginScreenState extends State<LoginScreen> with ValidationMixin {
   }
 
   Widget livedemoButton() {
-    // ignore: sized_box_for_whitespace
     return Container(
       width: double.infinity,
       child: ElevatedButton(
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.all(kadditionalColor),
-          padding: MaterialStateProperty.all(kButtonPadding),
+          padding: MaterialStateProperty.all(kPadding20),
         ),
         onPressed: () {
           Navigator.push(

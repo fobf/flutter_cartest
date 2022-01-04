@@ -3,8 +3,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+
 import 'package:video_player/video_player.dart';
 import 'package:flutter_cartest/const.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class VideoPlayerApp extends StatelessWidget {
   const VideoPlayerApp({Key? key}) : super(key: key);
@@ -12,23 +14,27 @@ class VideoPlayerApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: VideoPlayerScreen(),
+      home: LoggedInUserVideoPlayerScreen(),
     );
   }
 }
 
-class VideoPlayerScreen extends StatefulWidget {
-  const VideoPlayerScreen({Key? key}) : super(key: key);
+class LoggedInUserVideoPlayerScreen extends StatefulWidget {
+  const LoggedInUserVideoPlayerScreen({Key? key}) : super(key: key);
 
   @override
-  _VideoPlayerScreenState createState() => _VideoPlayerScreenState();
+  _LoggedInUserVideoPlayerScreenState createState() =>
+      _LoggedInUserVideoPlayerScreenState();
 }
 
-class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
+class _LoggedInUserVideoPlayerScreenState
+    extends State<LoggedInUserVideoPlayerScreen> {
   late VideoPlayerController _controller;
   late VideoPlayerController _controller1;
   late Future<void> _initializeVideoPlayerFuture;
   late Future<void> _initializeVideoPlayerFuture1;
+  late String? username;
+  late SharedPreferences loginData;
 
   @override
   void initState() {
@@ -56,6 +62,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     _controller1.play();
 
     super.initState();
+    initial();
+  }
+
+  void initial() async {
+    loginData = await SharedPreferences.getInstance();
+    setState(() {
+      username = loginData.getString('username');
+    });
   }
 
   @override
@@ -77,20 +91,46 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         child: Column(
           children: [
             const SizedBox(
+              height: kspacer50,
+            ),
+            Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+              Container(
+                color: ksecondaryColor,
+                width: k332,
+                height: k63,
+                child:
+                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  Center(
+                    child: Text(
+                      'Hello, $username',
+                      style: kwindowTextStyle,
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      loginData.setBool('login', true);
+                      Navigator.pop(context);
+                    },
+                    child: const Text('log out', style: kLogOutTextStyle),
+                  ),
+                ]),
+              ),
+            ]),
+            const SizedBox(
               height: kspacer100,
             ),
-            Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+            Row(mainAxisAlignment: MainAxisAlignment.end, children: [
               Stack(
                 alignment: kstackAlignmentBottomCenter,
                 children: [
                   Container(
-                    height: kwindow550,
-                    width: kwindow500,
+                    height: kwindow292,
+                    width: kwindow438,
                     color: ksecondaryColor,
                   ),
-                  Container(
-                    height: kwindow500,
-                    width: kwindow500,
+                  SizedBox(
+                    height: kwindow246,
+                    width: kwindow438,
                     child: MyVideo(url: kvideoUrl1),
                   ),
                   const Positioned(
@@ -124,18 +164,20 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                   ),
                 ],
               ),
+              const SizedBox(
+                width: kspacer50,
+              ),
               Stack(
                 alignment: kstackAlignmentBottomCenter,
                 children: [
                   Container(
-                    height: kwindow550,
-                    width: kwindow500,
+                    height: kwindow292,
+                    width: kwindow438,
                     color: ksecondaryColor,
                   ),
-                  // ignore: sized_box_for_whitespace
-                  Container(
-                    height: kwindow500,
-                    width: kwindow500,
+                  SizedBox(
+                    height: kwindow246,
+                    width: kwindow438,
                     child: MyVideo(url: kvideoUrl2),
                   ),
                   const Positioned(
@@ -168,7 +210,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                     ),
                   ),
                 ],
-              )
+              ),
+              const SizedBox(
+                width: kspacer50,
+              ),
             ]),
           ],
         ),
@@ -177,6 +222,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   }
 }
 
+// ignore: must_be_immutable
 class MyVideo extends StatefulWidget {
   late String url = "";
   MyVideo({Key? key, required this.url}) : super(key: key);
